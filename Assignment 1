@@ -1,0 +1,300 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Location {
+private:
+    string city;
+    string area;
+    string zipCode;
+    double latitude;
+    double longitude;
+
+public:
+    Location() : city(""), area(""), zipCode(""), latitude(0.0), longitude(0.0) {}
+    Location(string c, string a, string z, double lat, double lon) : city(c), area(a), zipCode(z), latitude(lat), longitude(lon) {}
+    
+    string getCity() const { return city; }
+    void setCity(string c) { city = c; }
+
+    void updateCoordinates(double newLat, double newLon) { latitude = newLat; longitude = newLon; }
+    void calculateDistance() const { cout << "Calculating routing...\n"; }
+    void verifyServiceZone() const { if (city == "Karachi") cout << "Active zone.\n"; }
+    void displayMapPin() const { cout << "Pin: " << latitude << ", " << longitude << "\n"; }
+};
+
+class Engine {
+private:
+    string fuelStandard; // Removed const to allow assignment
+    string engineNumber;
+    int cc;
+    string transmission;
+    bool isHybrid;
+
+public:
+    Engine() : fuelStandard("Euro-2"), engineNumber(""), cc(0), transmission(""), isHybrid(false) {}
+    Engine(string std, string eNum, int c, string t, bool h) : fuelStandard(std), engineNumber(eNum), cc(c), transmission(t), isHybrid(h) {}
+    
+    int getCC() const { return cc; }
+    void setCC(int c) { cc = c; }
+
+    void startEngine() const { cout << "Engine started.\n"; }
+    void stopEngine() const { cout << "Engine off.\n"; }
+    void diagnose() const { cout << fuelStandard << " diagnostics passed.\n"; }
+    void service() { cout << "Maintenance done.\n"; }
+};
+
+class Vehicle {
+private:
+    string VIN; // Removed const to allow assignment
+    string make;
+    string model;
+    int year;
+    int mileage;
+    Engine carEngine;
+
+public:
+    Vehicle() : VIN("UNKNOWN"), make(""), model(""), year(0), mileage(0) {}
+    Vehicle(string v, string mk, string md, int y, int mil, Engine e) : VIN(v), make(mk), model(md), year(y), mileage(mil), carEngine(e) {}
+    
+    string getMake() const { return make; }
+    string getModel() const { return model; }
+    int getYear() const { return year; }
+    int getMileage() const { return mileage; }
+    void setMileage(int m) { mileage = m; }
+
+    void driveTrip(int miles) { mileage += miles; }
+    void calculateDepreciation() const { cout << "Depreciated.\n"; }
+    void displaySpecs() const { cout << year << " " << make << " " << model << " - " << mileage << "km\n"; }
+    bool isVintage() const { return (2026 - year) > 25; }
+};
+
+class Message {
+private:
+    int MAX_LEN; // Removed const to allow assignment
+    int msgID;
+    string senderID;
+    string receiverID;
+    string content;
+    bool isRead;
+
+public:
+    Message() : MAX_LEN(500), msgID(0), senderID(""), receiverID(""), content(""), isRead(false) {}
+    Message(int id, string s, string r, string c) : MAX_LEN(500), msgID(id), senderID(s), receiverID(r), content(c), isRead(false) {}
+    
+    string getReceiver() const { return receiverID; }
+    void setContent(string c) { content = c; }
+
+    void deliver() { cout << "Delivered to " << receiverID << ".\n"; }
+    void readMessage() { isRead = true; }
+    void archive() { cout << "Archived.\n"; }
+    void deleteMsg() { content = ""; }
+};
+
+class User {
+protected:
+    string userID;
+    string name;
+    string email;
+    string password;
+    Location userLoc;
+
+public:
+    User() {}
+    User(string id, string n, string e, string p, Location l) : userID(id), name(n), email(e), password(p), userLoc(l) {}
+    virtual ~User() {}
+
+    string getName() const { return name; }
+    void setEmail(string e) { email = e; }
+
+    virtual void login(string p) { if(password == p) cout << "Logged in.\n"; }
+    virtual void logout() { cout << "Logged out.\n"; }
+    void resetPassword(string p) { password = p; }
+    void updateProfile() { cout << "Profile updated.\n"; }
+};
+
+class Seller : public User {
+private:
+    int rating;
+    int totalSold;
+    string cnic;
+    bool isVerified;
+    string dealershipName;
+
+public:
+    Seller() : rating(0), totalSold(0), isVerified(false) {}
+    Seller(string id, string n, string e, string p, Location l, string c, string d) 
+        : User(id, n, e, p, l), rating(5), totalSold(0), cnic(c), isVerified(false), dealershipName(d) {}
+    
+    int getRating() const { return rating; }
+    void setRating(int r) { rating = r; }
+
+    void verifyIdentity(string c) { if(cnic == c) isVerified = true; }
+    void boostAd() { if(isVerified) cout << "Boosted.\n"; }
+    void processSale() { totalSold++; }
+    void calculateRevenue() const { cout << "Revenue calculated.\n"; }
+};
+
+class Listing {
+private:
+    static int activeListings;
+    int listingID;
+    Vehicle car;
+    double price;
+    bool isActive;
+    Seller* owner;
+
+public:
+    Listing() : listingID(0), price(0.0), isActive(false), owner(nullptr) {}
+    Listing(int id, Vehicle v, double p, Seller* o) : listingID(id), car(v), price(p), isActive(true), owner(o) {
+        activeListings++;
+    }
+    Listing(const Listing& other) {
+        listingID = other.listingID;
+        car = other.car;
+        price = other.price;
+        isActive = other.isActive;
+        owner = other.owner; 
+    }
+
+    static int getActiveCount() { return activeListings; }
+
+    int getListingID() const { return listingID; }
+    Vehicle getCar() const { return car; }
+    double getPrice() const { return price; }
+    bool getIsActive() const { return isActive; }
+    Seller* getOwner() const { return owner; }
+    
+    void setPrice(double p) { price = p; }
+    void setIsActive(bool status) { isActive = status; }
+
+    void activate() { isActive = true; activeListings++; }
+    void deactivate() { isActive = false; activeListings--; }
+    void applyDiscount(double percent) { price *= (1.0 - percent); }
+    void displayListing() const { if(isActive) { cout << "ID " << listingID << " | PKR " << price << "\n"; car.displaySpecs(); } }
+};
+int Listing::activeListings = 0;
+
+class Buyer : public User {
+private:
+    const int MAX_FAVS; // CONST MEMBER 1
+    double budget;
+    Message outbox[10];
+    int msgCount;
+    Listing favs[5];
+    int favCount;
+
+public:
+    Buyer() : MAX_FAVS(5), budget(0.0), msgCount(0), favCount(0) {}
+    Buyer(string id, string n, string e, string p, Location l, double b) : User(id, n, e, p, l), MAX_FAVS(5), budget(b), msgCount(0), favCount(0) {}
+
+    double getBudget() const { return budget; }
+    void setBudget(double b) { budget = b; }
+
+    void saveFavorite(const Listing& l) { if(favCount < MAX_FAVS) favs[favCount++] = l; }
+    void removeFavorite() { if(favCount > 0) favCount--; }
+    void sendMessage(Message m) { if(msgCount < 10) outbox[msgCount++] = m; }
+    void viewFavorites() const { cout << "Saved: " << favCount << "\n"; }
+};
+
+class Admin : public User {
+private:
+    const int MAX_REPORTS; // CONST MEMBER 2
+    const string MASTER_CODE; // CONST MEMBER 3
+    int adminLevel;
+    int reportsHandled;
+    string shift;
+
+public:
+    Admin() : MAX_REPORTS(100), MASTER_CODE("ADM-XYZ"), adminLevel(1), reportsHandled(0) {}
+    Admin(string id, string n, string e, string p, Location l, int level, string sh, string code)
+        : User(id, n, e, p, l), MAX_REPORTS(100), MASTER_CODE(code), adminLevel(level), reportsHandled(0), shift(sh) {}
+
+    int getAdminLevel() const { return adminLevel; }
+    void setAdminLevel(int l) { adminLevel = l; }
+
+    void approveListing(Listing& l) { l.setIsActive(true); reportsHandled++; }
+    void removeListing(Listing& l) { l.setIsActive(false); }
+    void banUser(User& u) { u.setEmail("BANNED"); }
+    void generateReport() const { cout << "Reports: " << reportsHandled << "\n"; }
+};
+
+class Marketplace {
+private:
+    static int totalVisits;
+    const char* const platformName; // CONST MEMBER 4 & CONST POINTER
+    const int SYSTEM_CAPACITY; // CONST MEMBER 5
+    Listing allAds[100];
+    int adCount;
+    User* users[50];
+    int userCount;
+
+public:
+    Marketplace() : platformName("PakWheels_Clone"), SYSTEM_CAPACITY(100), adCount(0), userCount(0) {}
+
+    static int getPlatformVisits() { return totalVisits; }
+
+    int getAdCount() const { return adCount; }
+    void setAdCount(int c) { adCount = c; }
+
+    void addListing(Listing l) { if(adCount < SYSTEM_CAPACITY) allAds[adCount++] = l; }
+    
+    void updateListingPrice(int id, double newPrice) {
+        for(int i = 0; i < adCount; i++) {
+            if(allAds[i].getListingID() == id) { allAds[i].setPrice(newPrice); return; }
+        }
+    }
+    
+    void deleteListing(int id) {
+        for(int i = 0; i < adCount; i++) {
+            if(allAds[i].getListingID() == id) { allAds[i].setIsActive(false); return; }
+        }
+    }
+    
+    void filterVehicles(string b, string m, double p, int y, int mil) const {
+        for(int i = 0; i < adCount; i++) {
+            if(allAds[i].getIsActive() && 
+               allAds[i].getCar().getMake() == b && 
+               allAds[i].getCar().getModel() == m && 
+               allAds[i].getPrice() <= p && 
+               allAds[i].getCar().getYear() >= y && 
+               allAds[i].getCar().getMileage() <= mil) {
+                allAds[i].displayListing();
+            }
+        }
+    }
+};
+int Marketplace::totalVisits = 0;
+
+int main() {
+    cout << "System Justifications:\n";
+    cout << "- Constructors: Default used for array initialization. Parameterized for valid initial states. Copy constructor in Listing for deep copy in Buyer's favorites.\n";
+    cout << "- Statics: activeListings tracks global ads. totalVisits tracks platform traffic. Independent of instances.\n";
+
+    Marketplace system;
+    Location loc1("Karachi", "Clifton", "75600", 24.81, 67.03);
+    
+    Seller s1("S-001", "Ali", "ali@fast.edu.pk", "pass123", loc1, "42101", "Alpha");
+    Buyer b1("B-001", "Yahya", "yahya@fast.edu.pk", "pass456", loc1, 8000000.0);
+    Admin a1("A-001", "Dr. Rafi", "admin@fast.edu.pk", "root", loc1, 5, "Morning", "ADM-XYZ");
+
+    Engine eng1("Euro-5", "ENG-1", 1800, "Auto", true);
+    Vehicle veh1("VIN-123", "Toyota", "Prius", 2021, 40000, eng1);
+    
+    Listing ad1(101, veh1, 4500000.0, &s1);
+    system.addListing(ad1);
+
+    b1.saveFavorite(ad1);
+    Message msg(1, b1.getName(), s1.getName(), "Negotiable?");
+    b1.sendMessage(msg);
+
+    system.updateListingPrice(101, 4400000.0);
+    system.filterVehicles("Toyota", "Prius", 5000000.0, 2020, 50000);
+
+    a1.approveListing(ad1);
+    a1.removeListing(ad1);
+    system.deleteListing(101);
+
+    return 0;
+}
